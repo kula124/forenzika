@@ -1,4 +1,5 @@
 import numpy as np
+from PIL import Image
 
 
 def equalise_g(image):
@@ -44,4 +45,21 @@ def equalise_rgb(image):
             for y in range(height):
                 channel_pixles[x, y] = int(
                     255 * cProbability[channel_pixles[x, y]])
-    return image
+    return Image.merge(image.mode, (r, g, b))
+
+
+def amplify(image, factor=1):
+    src = image.split()
+    channels = list(src)
+    w, h = image.size
+
+    for c in channels:
+        pixels = c.load()
+        for x in range(w):
+            for y in range(h):
+                pixel = pixels[x, y]
+                if ((pixel * factor) > 255):
+                    pixels[x, y] = 255
+                else:
+                    pixels[x, y] = pixel * factor
+    return Image.merge(image.mode, src)
