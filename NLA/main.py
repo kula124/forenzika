@@ -14,7 +14,10 @@ showConfig = config["show"]
 image = Image.open(mainConfig["image_name"])
 
 image = wrapper(lambda: wrapper(lambda: equalise_g(
-    image), 'filter.use_grayscale', lambda: equalise_rgb(image)), 'filter.equalise', '', False)
+    image), 'filter.use_grayscale', lambda: equalise_rgb(image)), 'filter.equalise', image, False)
+
+if (toBool(filterConfig["use_grayscale"]) and not toBool(filterConfig["equalise"])):
+    image = image.convert("L")
 
 filteredImage = wrapper(
     lambda: SeparableMedianFilter(image, filterConfig["mask_size"]),
