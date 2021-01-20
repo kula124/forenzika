@@ -114,3 +114,8 @@ def SeparableMedianFilter(image, size):
                 pixles[x, y] = _findQuick3x3Median(
                     _getSubArray(pixles, x, y, h, "h"))
     return Image.merge(halfImage.mode, src)
+
+
+def shouldShowSave(config, func, paramToCheck):
+    if (toBool(config[paramToCheck])):
+        func()
