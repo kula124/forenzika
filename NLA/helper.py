@@ -50,6 +50,7 @@ def equalise_rgb(image):
 
 
 def amplify(image, factor=1):
+    factor = int(factor)
     src = image.split()
     channels = list(src)
     w, h = image.size
@@ -87,6 +88,7 @@ def _getSubArray(pixels, x, y, dim_size, dim):
 
 
 def SeparableMedianFilter(image, size):
+    size = int(size)
     if (size != 3 and size != 9):
         raise "Bad size param! Must be 3 or 9"
     if (size == 9):
