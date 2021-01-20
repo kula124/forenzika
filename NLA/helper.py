@@ -1,5 +1,6 @@
 import numpy as np
 from PIL import Image
+import math as Math
 
 
 def equalise_g(image):
@@ -63,3 +64,51 @@ def amplify(image, factor=1):
                 else:
                     pixels[x, y] = pixel * factor
     return Image.merge(image.mode, src)
+
+
+def _findQuick3x3Median(tuple3):
+    a, b, c = tuple3
+    mx = max(max(a, b), c)
+    mi = min(min(a, b), c)
+    return a ^ b ^ c ^ mx ^ mi
+
+
+def _getSubArray(pixels, x, y, dim_size, dim):
+    res = []
+    if (dim == "w"):
+        res.append(pixels[x, y])
+        res.append(pixels[x + 1, y] if x + 1 < dim_size else 0)
+        res.append(pixels[x + 2, y] if x + 2 < dim_size else 0)
+    elif (dim == "h"):
+        res.append(pixels[x, y])
+        res.append(pixels[x, y + 1] if y + 1 < dim_size else 0)
+        res.append(pixels[x, y + 2] if y + 2 < dim_size else 0)
+    return res
+
+
+def SeparableMedianFilter(image, size):
+    if (size != 3 and size != 9):
+        raise "Bad size param! Must be 3 or 9"
+    if (size == 9):
+        raise "Size 9 not implemented (yet)! Use 3"
+    w, h = image.size
+    src = image.split()
+    channels = list(src)
+
+    for c in channels:
+        pixles = c.load()
+        for x in range(w):
+            for y in range(h):
+                pixles[x, y] = _findQuick3x3Median(
+                    _getSubArray(pixles, x, y, w, "w"))
+    halfImage = Image.merge(image.mode, src)
+
+    src = halfImage.split()
+    channels = list(src)
+    for c in channels:
+        pixles = c.load()
+        for y in range(h):
+            for x in range(w):
+                pixles[x, y] = _findQuick3x3Median(
+                    _getSubArray(pixles, x, y, h, "h"))
+    return Image.merge(halfImage.mode, src)
