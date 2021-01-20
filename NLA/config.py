@@ -29,6 +29,8 @@ def constructWrapper(cf):
         else:
             if (toBool(value)):
                 return func()
+            else:
+                return elseFunc
     return configWrapper
 
 
